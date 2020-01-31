@@ -1,17 +1,58 @@
 <template>
   <div id="app">
-    <img alt="Vue logo" src="./assets/logo.png">
-    <HelloWorld msg="Welcome to Your Vue.js App"/>
+    <Header />
+    <b-container>
+      <b-row>
+        <b-col sm="6" offset="3">
+          <QuestionBox
+          :currentQuestion="questions[index]"
+          :next="next" 
+          :back="back"
+          v-if="questions.length"/>
+        </b-col>
+      </b-row>
+    </b-container>
+    <img v-if="!questions.length" alt="Vue logo" src="./assets/logo.png">
   </div>
 </template>
 
 <script>
-import HelloWorld from './components/HelloWorld.vue'
+// AT 1:29 in Learn Vue.js - Full Course for Beginners - 2019
+
+import Header from './components/Header.vue'
+import QuestionBox from './components/QuestionBox.vue'
 
 export default {
   name: 'app',
   components: {
-    HelloWorld
+    Header,
+    QuestionBox
+  },
+  data() {
+    return {
+      questions: [],
+      index: 0,
+    }
+  },
+  methods: {
+    next() {
+      this.index++;
+    },
+    back() {
+      this.index--;
+    }
+  },
+  mounted: function() {
+    fetch("https://opentdb.com/api.php?amount=10&type=multiple", {
+      method: "get"
+    })
+    .then ((response) => {
+      return response.json()
+    })
+    .then (jsonData => {
+      this.questions = jsonData.results
+      return this.questions
+    })
   }
 }
 </script>
